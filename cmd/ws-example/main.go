@@ -52,8 +52,9 @@ func main() {
 
 			text := e.GetText()
 
-			bot.SendPrivateMsg(ctx, e.TargetID, text)
-
+			if _, err := bot.SendPrivateMsg(ctx, e.TargetID, text); err != nil {
+				logger.Error("send private msg", zap.Error(err))
+			}
 		}
 	})
 
@@ -101,7 +102,9 @@ func main() {
 			return
 		}
 
-		bot.Send(ctx, msg)
+		if err := bot.Send(ctx, msg); err != nil {
+			logger.Error("send group msg", zap.Error(err))
+		}
 	})
 	bot.OnGroupFile(func(pme *napcat.GroupMessageEvent) {
 		fmt.Printf("pme: %+v\n", pme)

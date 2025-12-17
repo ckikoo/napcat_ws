@@ -1,4 +1,4 @@
-package napcat
+package napcat_ws
 
 import (
 	"runtime/debug"
