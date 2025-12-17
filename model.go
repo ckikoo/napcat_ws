@@ -3,7 +3,8 @@ package napcat
 import "encoding/json"
 
 const (
-	ActionSendGroupMsg = "send_group_msg"
+	ActionSendGroupMsg   = "send_group_msg"
+	ActionSendPrivateMsg = "send_private_msg"
 
 	TypeText  = "text"
 	TypeAt    = "at"
@@ -57,6 +58,12 @@ type SendGroupTextParams struct {
 	Message string `json:"message"`
 }
 
+type SendPrivateTextParams struct {
+	UserID     int64  `json:"user_id"`
+	Message    string `json:"message"`
+	AutoEscape bool   `json:"auto_escape,omitempty"`
+}
+
 type MessageSegment struct {
 	Type string          `json:"type"`
 	Data json.RawMessage `json:"data"`
@@ -65,6 +72,16 @@ type MessageSegment struct {
 type SendGroupSegmentsParams struct {
 	GroupID int64            `json:"group_id"`
 	Message []MessageSegment `json:"message"`
+}
+
+type SendPrivateSegmentsParams struct {
+	UserID     int64            `json:"user_id"`
+	Message    []MessageSegment `json:"message"`
+	AutoEscape bool             `json:"auto_escape,omitempty"`
+}
+
+type SendMsgData struct {
+	MessageID int64 `json:"message_id"`
 }
 
 type AtData struct {

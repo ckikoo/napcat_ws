@@ -264,6 +264,28 @@ func (b *Bot) Call(ctx context.Context, action string, params any, out any) erro
 	}
 }
 
+func (b *Bot) SendPrivateMsg(ctx context.Context, userID int64, message string) (int64, error) {
+	if userID <= 0 {
+		return 0, errors.New("napcat: invalid user_id")
+	}
+
+	var resp WSResponse[SendMsgData]
+	if err := b.Call(ctx, ActionSendPrivateMsg, SendPrivateTextParams{UserID: userID, Message: message}, &resp); err != nil {
+		return 0, err
+	}
+	if resp.Status != StatusOK || resp.Retcode != 0 {
+		msg := resp.Wording
+		if msg == "" {
+			msg = resp.Message
+		}
+		if msg != "" {
+			return 0, fmt.Errorf("napcat: send_private_msg failed: status=%s retcode=%d msg=%s", resp.Status, resp.Retcode, msg)
+		}
+		return 0, fmt.Errorf("napcat: send_private_msg failed: status=%s retcode=%d", resp.Status, resp.Retcode)
+	}
+	return resp.Data.MessageID, nil
+}
+
 func (b *Bot) GetPrivateFileURL(ctx context.Context, fileID string) (string, error) {
 	var resp WSResponse[GetPrivateFileURLData]
 	if err := b.Call(ctx, "get_private_file_url", GetPrivateFileURLParams{FileID: fileID}, &resp); err != nil {

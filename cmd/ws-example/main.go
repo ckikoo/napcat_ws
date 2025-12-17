@@ -50,9 +50,10 @@ func main() {
 				zap.String("text", e.GetText()),
 			)
 
-			infos, err := bot.GetGroupMemberList(ctx, 654586770)
-			fmt.Printf("infos: %+v\n", infos)
-			fmt.Printf("err: %+v\n", err)
+			text := e.GetText()
+
+			bot.SendPrivateMsg(ctx, e.TargetID, text)
+
 		}
 	})
 
@@ -92,17 +93,15 @@ func main() {
 	})
 
 	bot.OnGroup(func(e *napcat.GroupMessageEvent) {
-		name := e.Sender.Card
-		if name == "" {
-			name = e.Sender.Nickname
+		gid := e.GroupID
+
+		msg, err := napcat.MarshalGroupTextMsg(gid, e.GetText())
+		if err != nil {
+			logger.Error("marshal group text msg", zap.Error(err))
+			return
 		}
-		logger.Info("group message",
-			zap.Int64("group_id", e.GroupID),
-			zap.String("name", name),
-			zap.Int64("user_id", e.UserID),
-			zap.String("text", e.GetText()),
-			zap.Bool("at_me", e.IsAtMe()),
-		)
+
+		bot.Send(ctx, msg)
 	})
 	bot.OnGroupFile(func(pme *napcat.GroupMessageEvent) {
 		fmt.Printf("pme: %+v\n", pme)

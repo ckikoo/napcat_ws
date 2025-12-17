@@ -75,3 +75,22 @@ func TestMarshalGetGroupMemberList(t *testing.T) {
 		t.Fatalf("unexpected params: %+v", req.Params)
 	}
 }
+
+func TestMarshalPrivateTextMsg(t *testing.T) {
+	t.Parallel()
+
+	b, err := MarshalPrivateTextMsg(123, "hi")
+	if err != nil {
+		t.Fatalf("MarshalPrivateTextMsg() error: %v", err)
+	}
+	var req WSRequest[SendPrivateTextParams]
+	if err := json.Unmarshal(b, &req); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if req.Action != ActionSendPrivateMsg {
+		t.Fatalf("unexpected action: %q", req.Action)
+	}
+	if req.Params.UserID != 123 || req.Params.Message != "hi" {
+		t.Fatalf("unexpected params: %+v", req.Params)
+	}
+}

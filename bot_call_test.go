@@ -98,6 +98,18 @@ func TestBotCall_GetGroupFileURL(t *testing.T) {
 					Echo:    req.Echo,
 				})
 				ok = true
+			case ActionSendPrivateMsg:
+				resp, _ = json.Marshal(WSResponse[SendMsgData]{
+					Status:  StatusOK,
+					Retcode: 0,
+					Data: SendMsgData{
+						MessageID: 42,
+					},
+					Message: "ok",
+					Wording: "ok",
+					Echo:    req.Echo,
+				})
+				ok = true
 			}
 			if !ok {
 				continue
@@ -166,6 +178,14 @@ func TestBotCall_GetGroupFileURL(t *testing.T) {
 	}
 	if url != "http://example.com/private" {
 		t.Fatalf("unexpected url: %q", url)
+	}
+
+	msgID, err := bot.SendPrivateMsg(callCtx, 10001, "hi")
+	if err != nil {
+		t.Fatalf("SendPrivateMsg() error: %v", err)
+	}
+	if msgID != 42 {
+		t.Fatalf("unexpected message_id: %d", msgID)
 	}
 
 	cancelRun()
